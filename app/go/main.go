@@ -76,8 +76,10 @@ func main() {
 		oneRecord.Fallecidos, _ = strconv.Atoi(each[5])
 		oneRecord.Recuperados, _ = strconv.Atoi(each[6])
 		oneRecord.Activos = oneRecord.Casos - (oneRecord.Fallecidos + oneRecord.Hospitalizados)
-		jsondata, _ := json.Marshal(oneRecord) // convert to JSON
-		w.WriteString(string(jsondata) + "\n")
+		if len(oneRecord.Ccaa) == 2 {
+			jsondata, _ := json.Marshal(oneRecord) // convert to JSON
+			w.WriteString(string(jsondata) + "\n")
+		}
 	}
 
 	// Very important to invoke after writing a large number of lines

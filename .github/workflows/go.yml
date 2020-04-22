@@ -1,8 +1,6 @@
 name: Go
 
-on:
-  watch:
-    types: [started]
+on: push
 
 jobs:
 
@@ -29,12 +27,12 @@ jobs:
         fi
 
     - name: Build
-      run: go build -v -o bin/covid19ReportSp .
-    
+      run: go build -v .
+
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
         # Artifact name
-        name: covid19ReportSp
+        name: covid19SpReport
         # Directory containing files to upload
         path: bin

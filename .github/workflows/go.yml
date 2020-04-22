@@ -27,6 +27,7 @@ jobs:
         fi
 
     - name: Build
+      working-directory: ./app/go
       run: go build -v .
 
     - name: Upload artifact
@@ -35,4 +36,4 @@ jobs:
         # Artifact name
         name: covid19SpReport
         # Directory containing files to upload
-        path: bin
+        path: app/go/bin

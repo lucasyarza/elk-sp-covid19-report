@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"crypto/sha1"
 	"encoding/csv"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,6 +15,7 @@ import (
 )
 
 type DataCovid struct {
+	DocumentID     string
 	Fecha          string
 	Ccaa           string
 	Casos          int
@@ -75,7 +78,8 @@ func main() {
 		oneRecord.Uci, _ = strconv.Atoi(each[4])
 		oneRecord.Fallecidos, _ = strconv.Atoi(each[5])
 		oneRecord.Recuperados, _ = strconv.Atoi(each[6])
-		oneRecord.Activos = oneRecord.Casos - (oneRecord.Fallecidos + oneRecord.Hospitalizados)
+		oneRecord.Activos = oneRecord.Casos - (oneRecord.Fallecidos + oneRecord.Recuperados)
+		oneRecord.DocumentID = CreateId(oneRecord.Fecha, oneRecord.Ccaa)
 		if len(oneRecord.Ccaa) == 2 {
 			jsondata, _ := json.Marshal(oneRecord) // convert to JSON
 			w.WriteString(string(jsondata) + "\n")
@@ -110,4 +114,26 @@ func DownloadFile(url string, filepath string) error {
 	}
 
 	return nil
+}
+
+func CreateId(fecha string, ccaa string) string {
+	s := fecha + ccaa
+
+	// The pattern for generating a hash is `sha1.New()`,
+	// `sha1.Write(bytes)`, then `sha1.Sum([]byte{})`.
+	// Here we start with a new hash.
+	h := sha1.New()
+
+	// `Write` expects bytes. If you have a string `s`,
+	// use `[]byte(s)` to coerce it to bytes.
+	h.Write([]byte(s))
+
+	// This gets the finalized hash result as a byte
+	// slice. The argument to `Sum` can be used to append
+	// to an existing byte slice: it usually isn't needed.
+	bs := h.Sum(nil)
+
+	// SHA1 values are often printed in hex
+	str := hex.EncodeToString(bs)
+	return str
 }

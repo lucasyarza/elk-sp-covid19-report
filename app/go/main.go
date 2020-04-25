@@ -19,6 +19,7 @@ type DataCovid struct {
 	Fecha          string
 	Ccaa           string
 	Casos          int
+	TestAc         int
 	Hospitalizados int
 	Uci            int
 	Fallecidos     int
@@ -71,16 +72,21 @@ func main() {
 
 	for _, each := range csvData {
 		var oneRecord DataCovid
-		oneRecord.Ccaa = each[0]
-		oneRecord.Fecha = each[1] + " 12:00:00"
-		oneRecord.Casos, _ = strconv.Atoi(each[2])
-		oneRecord.Hospitalizados, _ = strconv.Atoi(each[3])
-		oneRecord.Uci, _ = strconv.Atoi(each[4])
-		oneRecord.Fallecidos, _ = strconv.Atoi(each[5])
-		oneRecord.Recuperados, _ = strconv.Atoi(each[6])
-		oneRecord.Activos = oneRecord.Casos - (oneRecord.Fallecidos + oneRecord.Recuperados)
-		oneRecord.DocumentID = CreateId(oneRecord.Fecha, oneRecord.Ccaa)
-		if len(oneRecord.Ccaa) == 2 {
+		if len(each[0]) == 2 {
+			oneRecord.Ccaa = each[0]
+			oneRecord.Fecha = each[1] + " 12:00:00"
+			oneRecord.Casos, _ = strconv.Atoi(each[2])
+			pcr, _ := strconv.Atoi(each[3])
+			if pcr > 0 {
+				oneRecord.Casos, _ = strconv.Atoi(each[3])
+			}
+			oneRecord.TestAc, _ = strconv.Atoi(each[4])
+			oneRecord.Hospitalizados, _ = strconv.Atoi(each[5])
+			oneRecord.Uci, _ = strconv.Atoi(each[6])
+			oneRecord.Fallecidos, _ = strconv.Atoi(each[7])
+			oneRecord.Recuperados, _ = strconv.Atoi(each[8])
+			oneRecord.Activos = oneRecord.Casos - (oneRecord.Fallecidos + oneRecord.Recuperados)
+			oneRecord.DocumentID = CreateId(oneRecord.Fecha, oneRecord.Ccaa)
 			jsondata, _ := json.Marshal(oneRecord) // convert to JSON
 			w.WriteString(string(jsondata) + "\n")
 		}
